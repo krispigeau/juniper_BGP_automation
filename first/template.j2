@@ -1,0 +1,75 @@
+system {
+    host-name {{ system.hostname}};
+}
+interfaces {
+{%- for intf in interfaces %}
+    {{ intf.name}} {
+{%-   for sub_intf in intf.sub_interfaces %}
+        unit {{ sub_intf.unit }} {
+{%-      if sub_intf.description is defined %}
+            description "{{ sub_intf.description }}";
+{%-      endif %}
+
+{%-      if sub_intf.ipv4_addr is defined %}
+            family inet {
+                address {{  sub_intf.ipv4_addr }};
+            }
+{%-      endif %}
+
+{%-      if sub_intf.ipv6_addr is defined %}
+            family inet6 {
+                address {{  sub_intf.ipv6_addr }};
+            }
+{%-      endif %}
+        }
+{%-   endfor %}
+    }
+{%- endfor %}
+}
+routing-options {
+{%- if routing_options.router_id  is defined %}
+    router-id {{ routing_options.router_id }};
+{%- endif %}
+
+{%- if routing_options.asn is defined %}
+    autonomous-system {{ routing_options.asn }};
+{%- endif %}
+}
+protocols {
+{%- if 'bgp' in protocols %}
+    bgp {
+{%-  for group in bgp_groups %}
+        group {{ group.name }} {
+            type {{ group.type }};
+            family {{ group.family[0] }} {
+                {{ group.family[1] }};
+            }
+            export {{ group.export }};
+{%- for neighbor in group.neighbors %}
+            neighbor {{neighbor.ip_addr}} {
+                peer-as {{neighbor.peers_asn}};
+            }
+{%- endfor %}
+        }
+{%- endfor %}
+    }
+{%- endif %}
+}
+policy-options {
+{%- for policy in policy_options  %}
+    policy-statement {{ policy.name }} {
+{%-   for term in policy.terms %}
+        term {{ term.term_name }} {
+ {%- if term.from is defined %}
+            from {
+{%-   for from in term.from %}
+                {{ from }};
+{%-   endfor %}
+            }
+ {%- endif %}
+            then {{ term.then }};
+        }
+{%-   endfor %}
+    }
+{%- endfor  %}
+}
