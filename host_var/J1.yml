@@ -1,0 +1,72 @@
+system:
+  hostname: 'J1'
+interfaces:
+- name: 'em0'
+  sub_interfaces:
+    - unit: 0
+      description: "To LAN 1"
+      ipv4_addr: 100.64.15.1/26
+      ipv6_addr: 2001:15:1::1/64
+- name: 'em1'
+  sub_interfaces:
+    - unit: 0
+      description: "To DMZ Network"
+      ipv4_addr: 10.15.1.1/25
+      ipv6_addr: FC00:0015:1::1/120
+  description: "To DMZ Network"
+  ipv4_addr: 10.15.1.1/25
+  ipv6_addr: FC00:0015:1::1/120
+- name: 'em5'
+  sub_interfaces:
+    - unit: 0
+      description: "OOB Managment"
+      ipv4_addr: 192.168.122.10/24
+- name: 'lo0'
+  sub_interfaces:
+    - unit: 0
+      ipv4_addr: 10.15.0.1/32
+      ipv6_addr: FC00:15::1/128
+routing_options:
+  router_id: 10.15.0.1
+  asn: 65151
+protocols:
+  - bgp
+  - ospf
+bgp_groups:
+  - name: IPv4-GROUP
+    type: external
+    family:
+      - inet
+      - unicast
+    export: POLICY-OUT-IPv4
+    neighbors:
+      - ip_addr: 10.15.1.81
+        peers_asn: 65150
+  - name: IPv6-GROUP
+    type: external
+    family:
+      - inet6
+      - unicast
+    export: POLICY-OUT-IPv6
+    neighbors:
+      - ip_addr: FC00:15:1::81
+        peers_asn: 65150
+policy_options:
+  - name: POLICY-OUT-IPv4
+    terms:
+      - term_name: 1
+        from:
+        - protocol direct
+        - route-filter 100.64.15.0/26 exact
+        then: accept
+      - term_name: 2
+        then: reject
+  - name: POLICY-OUT-IPv6
+    terms:
+      - term_name: 1
+        from:
+        - protocol direct
+        - route-filter 2001:15:1::/64 exact
+        then: accept
+      - term_name: 2
+        then: reject
