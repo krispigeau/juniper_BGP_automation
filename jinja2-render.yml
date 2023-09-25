@@ -1,10 +1,10 @@
 ---
-- hosts: core-sw-waw-01
+- hosts: Juniper_Routers
   gather_facts: no
   connection: local
 
   tasks:
     - name: Render config for host
       template:
-        src: "templates/base-cfg.j2"
+        src: "templates/template.j2"
         dest: "out/{{ inventory_hostname }}.cfg"
