@@ -3,19 +3,17 @@ system {
 }
 interfaces {
 {% for intf in interfaces %}
-    {{ intf.name}} {
+    {{ intf.name }} {
 {%   for sub_intf in intf.sub_interfaces %}
         unit {{ sub_intf.unit }} {
 {%      if sub_intf.description is defined %}
             description "{{ sub_intf.description }}";
 {%      endif %}
-
 {%      if sub_intf.ipv4_addr is defined %}
             family inet {
                 address {{  sub_intf.ipv4_addr }};
             }
 {%      endif %}
-
 {%      if sub_intf.ipv6_addr is defined %}
             family inet6 {
                 address {{  sub_intf.ipv6_addr }};
