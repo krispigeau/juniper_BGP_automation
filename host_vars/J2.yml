@@ -1,34 +1,28 @@
 system:
-  hostname: 'J1'
+  hostname: 'J4'
 interfaces:
 - name: 'em0'
   sub_interfaces:
     - unit: 0
-      description: "To LAN 1"
-      ipv4_addr: 100.64.15.1/26
-      ipv6_addr: 2001:15:1::1/64
-- name: 'em1'
-  sub_interfaces:
-    - unit: 0
-      description: "To DMZ Network"
-      ipv4_addr: 10.15.1.1/25
-      ipv6_addr: FC00:0015:1::1/120
+      description: "To LAN 4"
+      ipv4_addr: 100.64.15.193/26
+      ipv6_addr: 2001:15:4::1/64
 - name: 'em5'
   sub_interfaces:
     - unit: 0
-      description: "OOB Managment"
-      ipv4_addr: 192.168.122.10/24
+      description: "To DMZ Network"
+      ipv4_addr: 10.15.1.4/25
+      ipv6_addr: FC00:0015:1::4/120
 - name: 'lo0'
   sub_interfaces:
     - unit: 0
-      ipv4_addr: 10.15.0.1/32
-      ipv6_addr: FC00:15::1/128
+      ipv4_addr: 10.15.0.4/32
+      ipv6_addr: FC00:15::4/128
 routing_options:
-  router_id: 10.15.0.1
-  asn: 65151
+  router_id: 10.15.0.4
+  asn: 65153
 protocols:
   - bgp
-  - ospf
 bgp_groups:
   - name: IPv4-GROUP
     type: external
@@ -54,7 +48,7 @@ policy_options:
       - term_name: 1
         from:
         - protocol direct
-        - route-filter 100.64.15.0/26 exact
+        - route-filter 100.64.15.192/26 exact
         then: accept
       - term_name: 2
         then: reject
@@ -63,7 +57,7 @@ policy_options:
       - term_name: 1
         from:
         - protocol direct
-        - route-filter 2001:15:1::/64 exact
+        - route-filter 2001:15:4::/64 exact
         then: accept
       - term_name: 2
         then: reject
