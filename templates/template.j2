@@ -27,9 +27,9 @@ interfaces {
 routing-options {
 {% if routing_options.static is defined %}
 {% for route in routing_options.static %}
-    rib inet{{ route.inet_table }} {
+    rib inet{{ route.inet_table }}.0 {
         static {
-            route {{ route.network }} next-hop {{ route.network }};
+            route {{ route.network }} next-hop {{ route.next_hop }};
         }
     }
 {% endfor %}
@@ -41,9 +41,9 @@ routing-options {
     autonomous-system {{ routing_options.asn }};
 {% endif %}
 }
-protocols { 
+protocols {
 {% if 'bgp' in protocols %}
-    bgp { 
+    bgp {
 {%  for group in bgp_groups %}
         group {{ group.name }} {
             type {{ group.type }};
@@ -58,7 +58,7 @@ protocols {
 {% endfor %}
         }
 {% endfor %}
-    } 
+    }
 {% endif %}
 {% if 'ospf' in protocols %}
 {% for process in ospf_processes %}
@@ -74,10 +74,10 @@ protocols {
 {% for interface_p2p in process.interfaces_p2p %}
             interface {{ interface_p2p }} {
                 interface-type p2p;
-                }      
+            } 
 {% endfor %}
-            }
-        } 
+        }
+    }
 {% endif %}
 {% if process.type == 'ipv6' %}
     ospf3 {
@@ -94,11 +94,11 @@ protocols {
             }                
 {% endfor %}
         }
-    } 
+    }
 {% endif %}
 {% endfor %}
 {% endif %}
-} 
+}
 policy-options {
 {% for policy in policy_options  %}
     policy-statement {{ policy.name }} {
