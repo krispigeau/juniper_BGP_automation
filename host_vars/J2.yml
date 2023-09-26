@@ -69,8 +69,16 @@ ospf_processes:
       - lo0.0
       - em0.0
     interfaces_p2p:
+      - em1.0
+      - em4.0
+  - type: ipv6
+    export_policy: "OSPF-DEFAULT-ROUTE-IPv6"
+    interfaces:
       - lo0.0
       - em0.0
+    interfaces_p2p:
+      - em1.0
+      - em4.0
 policy_options:
   - name: POLICY-OUT-IPv4
     terms:

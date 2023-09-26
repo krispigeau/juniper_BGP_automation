@@ -74,11 +74,27 @@ protocols {
 {% for interface_p2p in process.interfaces_p2p %}
             interface {{ interface_p2p }} {
                 interface-type p2p;
+                }      
 {% endfor %}
-                }
-            } 
+            }
+        } 
+{% endif %}
+{% if process.type == 'ipv6' %}
+    ospf3 {
+{% if process.export_policy is defined %}
+        export {{ process.export_policy }};
+{% endif %}
+        area 0.0.0.0 {
+{% for interface in process.interfaces %}
+            interface {{ interface }};
+{% endfor %}
+{% for interface_p2p in process.interfaces_p2p %}
+            interface {{ interface_p2p }} {
+                interface-type p2p;
+            }                
+{% endfor %}
         }
-    }
+    } 
 {% endif %}
 {% endfor %}
 {% endif %}
