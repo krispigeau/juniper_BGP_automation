@@ -1,0 +1,133 @@
+system:
+  hostname: 'J2'
+interfaces:
+- name: 'em0'
+  sub_interfaces:
+    - unit: 0
+      description: "To LAN 2"
+      ipv4_addr: 100.64.15.65/27
+      ipv6_addr: 2001:15:2::1/64
+- name: 'em1'
+  sub_interfaces:
+    - unit: 0
+      description: "P2P to Router 3"
+      ipv4_addr: 10.15.23.1/30
+      ipv6_addr: FC00:15:23::/127
+- name: 'em3'
+  sub_interfaces:
+    - unit: 0
+      description: "To DMZ Network"
+      ipv4_addr: 10.15.1.2/25
+      ipv6_addr: FC00:0015:1::2/120
+- name: 'em4'
+  sub_interfaces:
+    - unit: 0
+      description: "P2P to Router 5"
+      ipv4_addr: 10.15.25.1/30
+      ipv6_addr: FC00:15:25::/127
+- name: 'lo0'
+  sub_interfaces:
+    - unit: 0
+      ipv4_addr: 10.15.0.2/32
+      ipv6_addr: FC00:15::2/128
+routing_options:
+  static:
+    - inet_table: 6
+      network: ::/0
+      next_hop: FC00:15:1::81
+    - inet_table: ""
+      network: 0.0.0.0/0
+      next_hop: 10.15.1.81
+  router_id: 10.15.0.2
+  asn: 65152
+protocols:
+  - bgp
+  - ospf
+bgp_groups:
+  - name: IPv4-GROUP
+    type: external
+    family:
+      - inet
+      - unicast
+    export: POLICY-OUT-IPv4
+    neighbors:
+      - ip_addr: 10.15.1.81
+        peers_asn: 65150
+  - name: IPv6-GROUP
+    type: external
+    family:
+      - inet6
+      - unicast
+    export: POLICY-OUT-IPv6
+    neighbors:
+      - ip_addr: FC00:15:1::81
+        peers_asn: 65150
+ospf_processes:
+  - type: ipv4
+    export_policy: "OSPF-DEFAULT-ROUTE"
+    interfaces:
+      - lo0.0
+      - em0.0
+    interfaces_p2p:
+      - em1.0
+      - em4.0
+  - type: ipv6
+    export_policy: "OSPF-DEFAULT-ROUTE-IPv6"
+    interfaces:
+      - lo0.0
+      - em0.0
+    interfaces_p2p:
+      - em1.0
+      - em4.0
+policy_options:
+  - name: OSPF-DEFAULT-ROUTE
+    terms:
+      - term_name: 1
+        from:
+        - protocol static
+        - route-filter 0.0.0.0/0 exact
+        then: accept
+      - term_name: 2
+        then: reject
+  - name: OSPF-DEFAULT-ROUTE-IPv6
+    terms:
+      - term_name: 1
+        from:
+        - family inet6
+        - protocol static
+        - route-filter 0.0.0.0/0 exact
+        then: accept
+      - term_name: 2
+        then: reject
+  - name: POLICY-OUT-IPv4
+    terms:
+      - term_name: 1
+        from:
+        - protocol ospf
+        - route-filter 100.64.15.96/27 exact
+        - route-filter 100.64.15.128/27 exact
+        - route-filter 100.64.15.160/27 exact
+        then: accept
+      - term_name: 2
+        from:
+        - protocol direct
+        - route-filter 100.64.15.64/27 exact
+        then: accept
+      - term_name: 3
+        then: reject
+  - name: POLICY-OUT-IPv6
+    terms:
+      - term_name: 1
+        from:
+        - protocol ospf
+        - route-filter 2001:15:3::/64 exact
+        - route-filter 2001:15:51::/64 exact
+        - route-filter 2001:15:52::/64 exact
+        then: accept
+      - term_name: 2
+        from:
+        - protocol direct
+        - route-filter 2001:15:2::/64 exact
+        then: accept
+      - term_name: 3
+        then: reject
