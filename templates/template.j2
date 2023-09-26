@@ -25,16 +25,25 @@ interfaces {
 {% endfor %}
 }
 routing-options {
-{% if routing_options.router_id  is defined %}
+{% if routing_options.static is defined %}
+{% for route in routing_options.static %}
+    rib inet{{ route.inet_table }} {
+        static {
+            route {{ route.network }} next-hop {{ route.network }};
+        }
+    }
+{% endfor %}
+{% endif %}
+{% if routing_options.router_id is defined %}
     router-id {{ routing_options.router_id }};
 {% endif %}
 {% if routing_options.asn is defined %}
     autonomous-system {{ routing_options.asn }};
 {% endif %}
 }
-protocols {
+protocols { 
 {% if 'bgp' in protocols %}
-    bgp {
+    bgp { 
 {%  for group in bgp_groups %}
         group {{ group.name }} {
             type {{ group.type }};
@@ -49,9 +58,31 @@ protocols {
 {% endfor %}
         }
 {% endfor %}
+    } 
+{% endif %}
+{% if 'ospf' in protocols %}
+{% for process in ospf_processes %}
+{% if process.type == 'ipv4' %}
+    ospf {
+{% if process.export_policy is defined %}
+        export {{ process.export_policy }};
+{% endif %}
+        area 0.0.0.0 {
+{% for interface in process.interfaces %}
+            interface {{ interface }};
+{% endfor %}
+{% for interface_p2p in process.interfaces_p2p %}
+            interface {{ interface_p2p }} {
+                interface-type p2p;
+{% endfor %}
+                }
+            } 
+        }
     }
 {% endif %}
-}
+{% endfor %}
+{% endif %}
+} 
 policy-options {
 {% for policy in policy_options  %}
     policy-statement {{ policy.name }} {

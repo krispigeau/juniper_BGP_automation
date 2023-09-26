@@ -27,8 +27,18 @@ interfaces:
       ipv4_addr: 10.15.0.1/32
       ipv6_addr: FC00:15::1/128
 routing_options:
+  static:
+    - inet_table: 0
+      network: 0.0.0.0/0
+      netx_hop: 10.15.25.1
+    - inet_table: 6.0
+      network: ::/0
+      netx_hop: FC00:15:1::81
   router_id: 10.15.0.1
   asn: 65151
+protocols:
+  - bgp
+  - ospf
 protocols:
   - bgp
   - ospf
@@ -51,6 +61,15 @@ bgp_groups:
     neighbors:
       - ip_addr: FC00:15:1::81
         peers_asn: 65150
+ospf_processes:
+  - type: ipv4
+    export_policy: "OSPF-DEFAULT-ROUTE"
+    interfaces:
+      - lo0.0
+      - em0.0
+    interfaces_p2p:
+      - lo0.0
+      - em0.0
 policy_options:
   - name: POLICY-OUT-IPv4
     terms:
