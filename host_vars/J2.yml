@@ -95,7 +95,7 @@ policy_options:
         from:
         - family inet6
         - protocol static
-        - route-filter 0.0.0.0/0 exact
+        - route-filter ::/0 exact
         then: accept
       - term_name: 2
         then: reject

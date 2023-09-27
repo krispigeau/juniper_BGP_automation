@@ -1,35 +1,35 @@
 system:
-  hostname: 'J2'
+  hostname: 'J3'
 interfaces:
 - name: 'em0'
   sub_interfaces:
     - unit: 0
-      description: "To LAN 2"
-      ipv4_addr: 100.64.15.65/27
-      ipv6_addr: 2001:15:2::1/64
+      description: "To LAN 3"
+      ipv4_addr: 100.64.15.97/27
+      ipv6_addr: 2001:15:3::1/64
 - name: 'em1'
   sub_interfaces:
     - unit: 0
-      description: "P2P to Router 3"
-      ipv4_addr: 10.15.23.1/30
-      ipv6_addr: FC00:15:23::/127
-- name: 'em3'
-  sub_interfaces:
-    - unit: 0
-      description: "To DMZ Network"
-      ipv4_addr: 10.15.1.2/25
-      ipv6_addr: FC00:0015:1::2/120
+      description: "P2P to Router 2"
+      ipv4_addr: 10.15.23.2/30
+      ipv6_addr: FC00:15:23::1/127
 - name: 'em4'
   sub_interfaces:
     - unit: 0
+      description: "To DMZ Network"
+      ipv4_addr: 10.15.1.3/25
+      ipv6_addr: FC00:0015:1::3/120
+- name: 'em5'
+  sub_interfaces:
+    - unit: 0
       description: "P2P to Router 5"
-      ipv4_addr: 10.15.25.1/30
-      ipv6_addr: FC00:15:25::/127
+      ipv4_addr: 10.15.35.1/30
+      ipv6_addr: FC00:15:35::/127
 - name: 'lo0'
   sub_interfaces:
     - unit: 0
-      ipv4_addr: 10.15.0.2/32
-      ipv6_addr: FC00:15::2/128
+      ipv4_addr: 10.15.0.3/32
+      ipv6_addr: FC00:15::3/128
 routing_options:
   static:
     - inet_table: 6
@@ -38,7 +38,7 @@ routing_options:
     - inet_table: ""
       network: 0.0.0.0/0
       next_hop: 10.15.1.81
-  router_id: 10.15.0.2
+  router_id: 10.15.0.3
   asn: 65152
 protocols:
   - bgp
@@ -70,7 +70,7 @@ ospf_processes:
       - em0.0
     interfaces_p2p:
       - em1.0
-      - em4.0
+      - em5.0
   - type: ipv6
     export_policy: "OSPF-DEFAULT-ROUTE-IPv6"
     interfaces:
@@ -78,7 +78,7 @@ ospf_processes:
       - em0.0
     interfaces_p2p:
       - em1.0
-      - em4.0
+      - em5.0
 policy_options:
   - name: OSPF-DEFAULT-ROUTE
     terms:
@@ -95,7 +95,7 @@ policy_options:
         from:
         - family inet6
         - protocol static
-        - route-filter 0.0.0.0/0 exact
+        - route-filter ::/0 exact
         then: accept
       - term_name: 2
         then: reject
@@ -104,14 +104,14 @@ policy_options:
       - term_name: 1
         from:
         - protocol ospf
-        - route-filter 100.64.15.96/27 exact
+        - route-filter 100.64.15.64/27 exact
         - route-filter 100.64.15.128/27 exact
         - route-filter 100.64.15.160/27 exact
         then: accept
       - term_name: 2
         from:
         - protocol direct
-        - route-filter 100.64.15.64/27 exact
+        - route-filter 100.64.15.96/27 exact
         then: accept
       - term_name: 3
         then: reject
@@ -120,14 +120,14 @@ policy_options:
       - term_name: 1
         from:
         - protocol ospf
-        - route-filter 2001:15:3::/64 exact
+        - route-filter 2001:15:2::/64 exact
         - route-filter 2001:15:51::/64 exact
         - route-filter 2001:15:52::/64 exact
         then: accept
       - term_name: 2
         from:
         - protocol direct
-        - route-filter 2001:15:2::/64 exact
+        - route-filter 2001:15:3::/64 exact
         then: accept
       - term_name: 3
         then: reject
