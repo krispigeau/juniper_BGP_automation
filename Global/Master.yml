@@ -7,15 +7,20 @@ interfaces:
       description: "To LAN 1"
       ipv4_addr: 100.64.15.1/26
       ipv6_addr: 2001:15:1::1/64
+- name: 'ge-0/0/0'
+  vlan_tagging: true
+  sub_interfaces:
+    - unit: 81
+      vlan_id: 81
+      description: "To VLAN 81"
+      ipv4_addr: 10.15.1.8/25
+      ipv6_addr: fc00:15:1::8/120
 - name: 'em1'
   sub_interfaces:
     - unit: 0
       description: "To DMZ Network"
       ipv4_addr: 10.15.1.1/25
       ipv6_addr: FC00:0015:1::1/120
-  description: "To DMZ Network"
-  ipv4_addr: 10.15.1.1/25
-  ipv6_addr: FC00:0015:1::1/120
 - name: 'em5'
   sub_interfaces:
     - unit: 0
@@ -36,9 +41,6 @@ routing_options:
       netx_hop: FC00:15:1::81
   router_id: 10.15.0.1
   asn: 65151
-protocols:
-  - bgp
-  - ospf
 protocols:
   - bgp
   - ospf
