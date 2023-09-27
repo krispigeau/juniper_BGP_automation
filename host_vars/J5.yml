@@ -1,0 +1,53 @@
+system:
+  hostname: 'J5'
+interfaces:
+- name: 'em0'
+  sub_interfaces:
+    - unit: 0
+      description: "To LAN 5.1"
+      ipv4_addr: 100.64.15.129/27
+      ipv6_addr: 2001:15:51::1/64
+- name: 'em1'
+  sub_interfaces:
+    - unit: 0
+      description: "To LAN 5.2"
+      ipv4_addr: 100.64.15.161/27
+      ipv6_addr: 2001:15:52::1/64
+- name: 'em4'
+  sub_interfaces:
+    - unit: 0
+      description: "P2P to Router 2"
+      ipv4_addr: 10.15.25.2/30
+      ipv6_addr: FC00:15:25::1/127
+- name: 'em5'
+  sub_interfaces:
+    - unit: 0
+      description: "P2P to Router 5!"
+      ipv4_addr: 10.15.35.2/30
+      ipv6_addr: FC00:15:35::1/127
+- name: 'lo0'
+  sub_interfaces:
+    - unit: 0
+      ipv4_addr: 10.15.0.5/32
+      ipv6_addr: FC00:15::5/128
+routing_options:
+  router_id: 10.15.0.5
+protocols:
+  - ospf
+ospf_processes:
+  - type: ipv4
+    interfaces:
+      - lo0.0
+      - em0.0
+      - em1.0
+    interfaces_p2p:
+      - em4.0
+      - em5.0
+  - type: ipv6
+    interfaces:
+      - lo0.0
+      - em0.0
+      - em1.0
+    interfaces_p2p:
+      - em4.0
+      - em5.0

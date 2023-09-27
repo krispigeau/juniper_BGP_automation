@@ -99,6 +99,7 @@ protocols {
 {% endfor %}
 {% endif %}
 }
+{% if policy_options is defined %}
 policy-options {
 {% for policy in policy_options  %}
     policy-statement {{ policy.name }} {
@@ -117,3 +118,4 @@ policy-options {
     }
 {% endfor  %}
 }
+{% endif %}
