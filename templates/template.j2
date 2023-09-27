@@ -4,8 +4,14 @@ system {
 interfaces {
 {% for intf in interfaces %}
     {{ intf.name }} {
+{% if intf.vlan_tagging is true %}
+        vlan-tagging;
+{% endif %}
 {%   for sub_intf in intf.sub_interfaces %}
         unit {{ sub_intf.unit }} {
+{%      if sub_intf.vlan_id is defined %}
+            vlan-id {{ sub_intf.vlan_id }};
+{%      endif %}
 {%      if sub_intf.description is defined %}
             description "{{ sub_intf.description }}";
 {%      endif %}

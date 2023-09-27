@@ -1,0 +1,87 @@
+system:
+  hostname: 'J8'
+interfaces:
+- name: 'ge-0/0/0'
+  vlan_tagging: true
+  sub_interfaces:
+    - unit: 81
+      vlan_id: 81
+      description: "To VLAN 81"
+      ipv4_addr: 10.15.1.8/25
+      ipv6_addr: fc00:15:1::8/120
+- name: 'ge-0/0/13'
+  sub_interfaces:
+    - unit: 0
+      description: "To ASN 65144"
+      ipv4_addr: 100.64.144.8/24
+      ipv6_addr: fc00:0000:0144::8/64
+- name: 'ge-0/0/14'
+  sub_interfaces:
+    - unit: 0
+      description: "DMZ to ASN 9"
+      ipv4_addr: 10.0.89.1/24
+      ipv6_addr: fc00:0000:0089::0/127
+- name: 'ge-0/0/15'
+  sub_interfaces:
+    - unit: 0
+      description: "DMZ to ASN 7"
+      ipv4_addr: 10.0.78.2/24
+      ipv6_addr: fc00:0000:0078::1/127
+- name: 'lo0'
+  sub_interfaces:
+    - unit: 0
+      ipv4_addr: 10.0.0.8/32
+      ipv6_addr: fc00::8/128;
+routing_options:
+  router_id: 10.0.0.8
+  asn: 8
+protocols:
+  - bgp
+bgp_groups:
+  - name: IPv4-GROUP
+    type: external
+    family:
+      - inet
+      - unicast
+    export: POLICY-IPv4-OUT
+    neighbors:
+      - ip_addr: 10.0.89.2
+        peers_asn: 9
+      - ip_addr: 10.0.78.1
+        peers_asn: 7
+      - ip_addr: 10.15.1.81
+        peers_asn: 65150
+      - ip_addr: 100.64.144.144
+        peers_asn: 65144
+  - name: IPv6-GROUP
+    type: external
+    family:
+      - inet6
+      - unicast
+    export: POLICY-IPv6-OUT
+    neighbors:
+      - ip_addr: fc00:0000:0089::1
+        peers_asn: 9
+      - ip_addr: fc00:0000:0078::0
+        peers_asn: 7
+      - ip_addr: fc00:15:1::81
+        peers_asn: 65150
+      - ip_addr: fc00:0:144::144
+        peers_asn: 65144
+policy_options:
+  - name: POLICY-IPv4-OUT
+    terms:
+      - term_name: 1
+        from:
+        - protocol bgp
+        then: accept
+      - term_name: 2
+        then: reject
+  - name: POLICY-IPv6-OUT
+    terms:
+      - term_name: 1
+        from:
+        - protocol bgp
+        then: accept
+      - term_name: 2
+        then: reject
