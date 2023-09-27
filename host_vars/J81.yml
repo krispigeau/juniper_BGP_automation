@@ -1,0 +1,71 @@
+system:
+  hostname: 'J81'
+interfaces:
+- name: 'ge-0/0/0'
+  sub_interfaces:
+    - unit: 0
+      description: "To DMZ Network"
+      ipv4_addr: 10.15.1.81/25
+      ipv6_addr: fc00:0015:1::81/120
+- name: 'lo0'
+  sub_interfaces:
+    - unit: 0
+      ipv4_addr: 10.15.0.81/32
+      ipv6_addr: fc00:15::81/128
+routing_options:
+  router_id: 10.15.0.81
+  asn: 65150
+protocols:
+  - bgp
+bgp_groups:
+  - name: IPv4-GROUP
+    type: external
+    family:
+      - inet
+      - unicast
+    export: POLICY-IPv4-OUT
+    neighbors:
+      - ip_addr: 10.15.1.8
+        peers_asn: 8
+      - ip_addr: 10.15.1.1
+        peers_asn: 65151
+      - ip_addr: 10.15.1.2
+        peers_asn: 65152
+      - ip_addr: 10.15.1.3
+        peers_asn: 65152
+      - ip_addr: 10.15.1.4
+        peers_asn: 65153
+  - name: IPv6-GROUP
+    type: external
+    family:
+      - inet6
+      - unicast
+    export: POLICY-IPv6-OUT
+    neighbors:
+      - ip_addr: fc00:15:1::8
+        peers_asn: 8
+      - ip_addr: fc00:15:1::1
+        peers_asn: 65151
+      - ip_addr: fc00:15:1::2
+        peers_asn: 65152
+      - ip_addr: fc00:15:1::3
+        peers_asn: 65152
+      - ip_addr: fc00:15:1::4
+        peers_asn: 65153
+policy_options:
+  - name: POLICY-IPv4-OUT
+    terms:
+      - term_name: 1
+        from:
+        - protocol bgp
+        then: accept
+      - term_name: 2
+        then: reject
+  - name: POLICY-IPv6-OUT
+    terms:
+      - term_name: 1
+        from:
+        - protocol bgp
+        then: accept
+      - term_name: 2
+        then: reject
