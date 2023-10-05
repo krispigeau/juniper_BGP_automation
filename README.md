@@ -9,4 +9,5 @@ https://github.com/krispigeau/juniper_BGP_automation/blob/main/templates/templat
 Configurations can be generated then copied to devices
 
 To run playbook
+
 ansible-playbook jinja2-render.yml
